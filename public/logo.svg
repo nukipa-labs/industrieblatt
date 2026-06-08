@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 40" height="40">
+  <!-- Folded page / leaf mark -->
+  <rect x="2" y="4" width="22" height="30" rx="2" fill="none" stroke="#1a2332" stroke-width="2"/>
+  <path d="M14 4 L24 14 L14 14 Z" fill="#1a2332" opacity="0.25"/>
+  <line x1="7" y1="18" x2="19" y2="18" stroke="#1a2332" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="7" y1="23" x2="16" y2="23" stroke="#1a2332" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="7" y1="28" x2="19" y2="28" stroke="#1a2332" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Wordmark -->
+  <text x="32" y="28" font-family="'Instrument Serif', Georgia, serif"
+        font-weight="400" font-size="26" fill="#1a2332" letter-spacing="0">Industrieblatt</text>
+</svg>
