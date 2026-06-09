@@ -152,12 +152,32 @@ export default async function ArticlePage({ params }: Props) {
       </div>
 
       {/* Hero image */}
-      {post.cover?.url && (
-        <figure className="na-hero-image">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.cover.url} alt={post.cover.alt || post.title} />
-        </figure>
-      )}
+      {post.cover?.url && (() => {
+        const attr = post.cover!.attribution as {
+          author?: string; source?: string; photo_url?: string; source_url?: string;
+        } | null | undefined;
+        return (
+          <figure className="na-hero-image">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={post.cover!.url} alt={post.cover!.alt || post.title} />
+            {attr?.author && (
+              <figcaption className="na-cover-credit">
+                Foto von{' '}
+                <a href={attr.source_url ?? attr.photo_url} target="_blank" rel="noopener noreferrer">
+                  {attr.author}
+                </a>
+                {attr.source && (
+                  <>{' '}auf{' '}
+                    <a href="https://unsplash.com/?utm_source=industrieblatt&utm_medium=referral" target="_blank" rel="noopener noreferrer">
+                      {attr.source}
+                    </a>
+                  </>
+                )}
+              </figcaption>
+            )}
+          </figure>
+        );
+      })()}
 
       {/* Article body + share sidebar */}
       <div className="na-body-wrap">
@@ -449,6 +469,7 @@ export default async function ArticlePage({ params }: Props) {
           background: #000;
           max-height: 560px;
           overflow: hidden;
+          position: relative;
         }
         .na-hero-image img {
           width: 100%;
@@ -457,6 +478,24 @@ export default async function ArticlePage({ params }: Props) {
           object-fit: cover;
           display: block;
         }
+        .na-cover-credit {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          padding: 0.25rem 0.625rem;
+          background: rgba(0,0,0,0.45);
+          color: rgba(255,255,255,0.8);
+          font-size: 0.6875rem;
+          line-height: 1.5;
+          backdrop-filter: blur(4px);
+          border-top-left-radius: var(--radius-sm);
+        }
+        .na-cover-credit a {
+          color: rgba(255,255,255,0.9);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        .na-cover-credit a:hover { color: #fff; }
 
         /* Article body */
         .na-body-wrap {
