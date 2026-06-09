@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { SlimPost } from '@nukipa/site-sdk';
-import { FoundersBanner } from './FoundersBanner';
 
 function formatRelativeTime(dateStr?: string | null): string {
   if (!dateStr) return '';
@@ -67,9 +66,6 @@ export function NewsIndex({ posts }: { posts: SlimPost[] }) {
           </div>
         </div>
       </header>
-
-      {/* Founders banner */}
-      <FoundersBanner />
 
       {/* Folder / category filter — only shown when there are 2+ distinct folders */}
       {folders.length > 1 && (
