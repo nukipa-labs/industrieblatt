@@ -361,6 +361,28 @@ export function NewsIndex({ posts }: { posts: SlimPost[] }) {
         .ib-card-attr { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; color: var(--fg-muted); }
         .ib-card-attr-logo { width: 16px; height: 16px; object-fit: contain; border-radius: 2px; }
 
+        /* Photo attribution overlay (featured + cards) */
+        .ib-cover-credit {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          padding: 0.2rem 0.5rem;
+          background: rgba(0,0,0,0.45);
+          color: rgba(255,255,255,0.75);
+          font-size: 0.625rem;
+          line-height: 1.5;
+          backdrop-filter: blur(4px);
+          border-top-left-radius: var(--radius-sm);
+          z-index: 2;
+          pointer-events: auto;
+        }
+        .ib-cover-credit a {
+          color: rgba(255,255,255,0.85);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        .ib-cover-credit a:hover { color: #fff; }
+
         /* Footer */
         .ib-footer {
           background: var(--bg-white);
@@ -381,6 +403,30 @@ export function NewsIndex({ posts }: { posts: SlimPost[] }) {
   );
 }
 
+function CoverCredit({ cover }: { cover: SlimPost['cover'] }) {
+  const attr = (cover as any)?.attribution as {
+    author?: string; source?: string; photo_url?: string; source_url?: string;
+  } | null | undefined;
+  if (!attr?.author) return null;
+  return (
+    <span className="ib-cover-credit" onClick={e => e.preventDefault()}>
+      <a href={attr.source_url ?? attr.photo_url} target="_blank" rel="noopener noreferrer"
+         onClick={e => e.stopPropagation()}>
+        {attr.author}
+      </a>
+      {attr.source && (
+        <>{' '}·{' '}
+          <a href="https://unsplash.com/?utm_source=industrieblatt&utm_medium=referral"
+             target="_blank" rel="noopener noreferrer"
+             onClick={e => e.stopPropagation()}>
+            {attr.source}
+          </a>
+        </>
+      )}
+    </span>
+  );
+}
+
 function FeaturedArticle({ post }: { post: SlimPost }) {
   const recent = isRecent(post.published_at);
   return (
@@ -389,6 +435,7 @@ function FeaturedArticle({ post }: { post: SlimPost }) {
         <div className="ib-featured-img-wrap">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={post.cover.url} alt={post.cover.alt || post.title} className="ib-featured-img" />
+          <CoverCredit cover={post.cover} />
         </div>
       ) : (
         <div className="ib-featured-placeholder" />
@@ -420,6 +467,7 @@ function ArticleCard({ post }: { post: SlimPost }) {
             {post.folder?.slug && post.folder.slug !== 'general' && <span className="badge">{post.folder.name}</span>}
             {recent && <span className="badge badge-live">Aktuell</span>}
           </div>
+          <CoverCredit cover={post.cover} />
         </div>
       ) : (
         <div className="ib-card-placeholder">
