@@ -50,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet"
         />
+        <script src="/nukipa-widget.js" defer />
       </head>
       <body>
         {children}
