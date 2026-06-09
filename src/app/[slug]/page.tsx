@@ -54,8 +54,9 @@ export default async function ArticlePage({ params }: Props) {
   const related     = await client.listRelatedPosts(slug, { limit: 3 });
   const sourcesHtml = renderSourcesList(post.sources ?? []);
   const minutes     = readingTime(post.body);
-  const author      = (post as any).author;
-  const attr        = (post as any).submitted_by_company;
+  const author        = (post as any).author as { name?: string; job_title?: string; profile_picture_url?: string; description?: string; email?: string } | null;
+  const bylineAuthor  = author ?? { name: 'Redaktion Industrieblatt' };
+  const attr          = (post as any).submitted_by_company;
   const isRecent    = post.published_at
     ? (Date.now() - new Date(post.published_at).getTime()) < 4 * 3600 * 1000
     : false;
@@ -109,20 +110,18 @@ export default async function ArticlePage({ params }: Props) {
           {/* Meta row: author + date + reading time */}
           <div className="na-meta">
             <div className="na-meta-row">
-              {author && (
-                <div className="na-author">
-                  {author.profile_picture_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={author.profile_picture_url} alt={author.name} className="na-author-avatar" />
-                  ) : (
-                    <span className="na-author-initials">{getInitials(author.name)}</span>
-                  )}
-                  <div className="na-author-info">
-                    <span className="na-author-name">{author.name}</span>
-                    {author.job_title && <span className="na-author-role">{author.job_title}</span>}
-                  </div>
+              <div className="na-author">
+                {bylineAuthor.profile_picture_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={bylineAuthor.profile_picture_url} alt={bylineAuthor.name} className="na-author-avatar" />
+                ) : (
+                  <span className="na-author-initials">{getInitials(bylineAuthor.name)}</span>
+                )}
+                <div className="na-author-info">
+                  <span className="na-author-name">{bylineAuthor.name}</span>
+                  {bylineAuthor.job_title && <span className="na-author-role">{bylineAuthor.job_title}</span>}
                 </div>
-              )}
+              </div>
               <div className="na-dateline">
                 <time>{formatAbsoluteDate(post.published_at)}</time>
                 <span className="na-reading-time">
@@ -205,8 +204,8 @@ export default async function ArticlePage({ params }: Props) {
         </main>
       </div>
 
-      {/* Author bio */}
-      {author && (
+      {/* Author bio — only when a real named author with bio content exists */}
+      {author && (author.description || author.email) && (
         <section className="na-author-bio">
           <div className="na-author-bio-inner">
             <div className="na-author-bio-avatar">

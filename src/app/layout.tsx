@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { NukipaFeedback } from '@/components/NukipaFeedback';
+import { ChartIslands } from '@/components/ChartIslands';
 import { getNukipaClient } from '@/lib/nukipa';
 import '@nukipa/post-renderer-react/styles.css';
 import './globals.css';
@@ -50,11 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet"
         />
-        <script src="/nukipa-widget.js" defer />
       </head>
       <body>
         {children}
-        <NukipaFeedback />
+        <ChartIslands />
       </body>
     </html>
   );
