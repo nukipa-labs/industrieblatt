@@ -96,12 +96,21 @@ export default async function ArticlePage({ params }: Props) {
       {/* Article hero */}
       <div className="na-hero">
         <div className="na-hero-inner">
-          {post.folder?.slug && post.folder.slug !== 'general' && (
-            <div className="na-overline">
-              <span className="na-overline-line" />
-              <span className="na-overline-text">{post.folder?.name}</span>
-            </div>
-          )}
+          {(() => {
+            const postType = (post as any).post_type as string | null;
+            if (postType === 'advertorial') {
+              return <span className="na-anzeige-label">Anzeige</span>;
+            }
+            if (post.folder?.slug && post.folder.slug !== 'general') {
+              return (
+                <div className="na-overline">
+                  <span className="na-overline-line" />
+                  <span className="na-overline-text">{post.folder?.name}</span>
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           <h1 className="na-title">{post.title}</h1>
 
@@ -132,19 +141,15 @@ export default async function ArticlePage({ params }: Props) {
               </div>
             </div>
 
-            {/* Submitted-by attribution */}
+            {/* Submitted-by attribution — subtle inline note */}
             {attr?.company_name && (
-              <div className="na-attr">
-                {attr.logo_url ? (
+              <p className="na-attr-inline">
+                {attr.logo_url && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={attr.logo_url} alt={attr.company_name} className="na-attr-logo" />
-                ) : (
-                  <span className="na-attr-initials">{getInitials(attr.company_name)}</span>
+                  <img src={attr.logo_url} alt={attr.company_name} className="na-attr-logo-sm" />
                 )}
-                <span className="na-attr-text">
-                  Bereitgestellt von <strong>{attr.company_name}</strong>
-                </span>
-              </div>
+                Bereitgestellt von {attr.company_name}
+              </p>
             )}
           </div>
         </div>
@@ -159,7 +164,7 @@ export default async function ArticlePage({ params }: Props) {
           <figure className="na-hero-image">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={post.cover!.url} alt={post.cover!.alt || post.title} />
-            {attr?.author && (
+            {attr?.author ? (
               <figcaption className="na-cover-credit">
                 Foto von{' '}
                 <a href={attr.source_url ?? attr.photo_url} target="_blank" rel="noopener noreferrer">
@@ -173,6 +178,8 @@ export default async function ArticlePage({ params }: Props) {
                   </>
                 )}
               </figcaption>
+            ) : (
+              <figcaption className="na-cover-ai">KI-generiert</figcaption>
             )}
           </figure>
         );
@@ -432,34 +439,29 @@ export default async function ArticlePage({ params }: Props) {
           align-items: center;
           gap: 0.25rem;
         }
-        .na-attr {
+        .na-anzeige-label {
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--fg-muted);
+          display: block;
+          margin-bottom: 0.75rem;
+        }
+        .na-attr-inline {
+          font-size: 0.75rem;
+          color: var(--fg-muted);
+          margin: 0;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-size: 0.8125rem;
-          color: var(--fg-muted);
-          padding: 0.5rem 0.75rem;
-          background: var(--bg);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-sm);
-          width: fit-content;
+          gap: 0.375rem;
         }
-        .na-attr-logo {
-          width: 20px;
-          height: 20px;
+        .na-attr-logo-sm {
+          width: 14px;
+          height: 14px;
           object-fit: contain;
           border-radius: 2px;
-        }
-        .na-attr-initials {
-          width: 20px;
-          height: 20px;
-          background: #ccc;
-          border-radius: 2px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.6rem;
-          font-weight: 700;
+          opacity: 0.7;
         }
 
         /* Hero image */
@@ -495,6 +497,18 @@ export default async function ArticlePage({ params }: Props) {
           text-underline-offset: 2px;
         }
         .na-cover-credit a:hover { color: #fff; }
+        .na-cover-ai {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          padding: 0.2rem 0.5rem;
+          background: rgba(0,0,0,0.3);
+          color: rgba(255,255,255,0.5);
+          font-size: 0.625rem;
+          letter-spacing: 0.04em;
+          backdrop-filter: blur(4px);
+          border-top-left-radius: var(--radius-sm);
+        }
 
         /* Article body */
         .na-body-wrap {

@@ -378,6 +378,20 @@ export function NewsIndex({ posts }: { posts: SlimPost[] }) {
           text-underline-offset: 2px;
         }
         .ib-cover-credit a:hover { color: #fff; }
+        .ib-cover-ai {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          padding: 0.2rem 0.5rem;
+          background: rgba(0,0,0,0.25);
+          color: rgba(255,255,255,0.45);
+          font-size: 0.575rem;
+          letter-spacing: 0.04em;
+          backdrop-filter: blur(4px);
+          border-top-left-radius: var(--radius-sm);
+          z-index: 2;
+          pointer-events: none;
+        }
 
         /* Footer */
         .ib-footer {
@@ -403,24 +417,26 @@ function CoverCredit({ cover }: { cover: SlimPost['cover'] }) {
   const attr = (cover as any)?.attribution as {
     author?: string; source?: string; photo_url?: string; source_url?: string;
   } | null | undefined;
-  if (!attr?.author) return null;
-  return (
-    <span className="ib-cover-credit" onClick={e => e.preventDefault()}>
-      <a href={attr.source_url ?? attr.photo_url} target="_blank" rel="noopener noreferrer"
-         onClick={e => e.stopPropagation()}>
-        {attr.author}
-      </a>
-      {attr.source && (
-        <>{' '}·{' '}
-          <a href="https://unsplash.com/?utm_source=industrieblatt&utm_medium=referral"
-             target="_blank" rel="noopener noreferrer"
-             onClick={e => e.stopPropagation()}>
-            {attr.source}
-          </a>
-        </>
-      )}
-    </span>
-  );
+  if (attr?.author) {
+    return (
+      <span className="ib-cover-credit" onClick={e => e.preventDefault()}>
+        <a href={attr.source_url ?? attr.photo_url} target="_blank" rel="noopener noreferrer"
+           onClick={e => e.stopPropagation()}>
+          {attr.author}
+        </a>
+        {attr.source && (
+          <>{' '}·{' '}
+            <a href="https://unsplash.com/?utm_source=industrieblatt&utm_medium=referral"
+               target="_blank" rel="noopener noreferrer"
+               onClick={e => e.stopPropagation()}>
+              {attr.source}
+            </a>
+          </>
+        )}
+      </span>
+    );
+  }
+  return <span className="ib-cover-ai">KI-generiert</span>;
 }
 
 function FeaturedArticle({ post }: { post: SlimPost }) {
