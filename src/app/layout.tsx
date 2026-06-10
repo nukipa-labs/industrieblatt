@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ChartIslands } from '@/components/ChartIslands';
+import { VisitTracker } from '@/components/VisitTracker';
 import { getNukipaClient } from '@/lib/nukipa';
 import '@nukipa/post-renderer-react/styles.css';
 import './globals.css';
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <ChartIslands />
+        <VisitTracker />
       </body>
     </html>
   );
