@@ -39,7 +39,11 @@ export function getMiddlewareClient(req: NextRequest): NukipaClient {
   return createNukipaClient({
     gatewayUrl:   GATEWAY_URL!,
     getHost:      () => TENANT_HOST || req.headers.get('x-forwarded-host') || req.headers.get('host') || '',
-    getIp:        () => req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    // Real client IP on Vercel. x-forwarded-for's first entry is the client;
+    // x-real-ip is a Vercel-set backstop. (Next 15 removed NextRequest.ip.)
+    getIp:        () => req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+                     || req.headers.get('x-real-ip')?.trim()
+                     || null,
     getUserAgent: () => req.headers.get('user-agent'),
     getReferer:   () => req.headers.get('referer')
   });
