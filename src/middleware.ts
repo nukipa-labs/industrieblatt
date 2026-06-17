@@ -13,9 +13,18 @@ import { getMiddlewareClient } from '@/lib/nukipa';
  * door while the visit row is being inserted server-side.
  */
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
-  const res    = NextResponse.next();
   const client = getMiddlewareClient(req);
   const url    = req.nextUrl;
+
+  // Per-pageview nonce for the cookieless proof-of-JS beacon. Sent with the
+  // (server-side) visit row AND exposed to the layout via a request header so
+  // it can render the beacon for THIS render. Ephemeral + per-pageview → no
+  // storage, no fingerprint → out of ePrivacy/GDPR scope. crypto.randomUUID()
+  // is a Web Crypto global — Edge-runtime safe.
+  const beaconNonce    = crypto.randomUUID();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-nukipa-nonce', beaconNonce);
+  const res = NextResponse.next({ request: { headers: requestHeaders } });
 
   // Track via event.waitUntil — NOT bare fire-and-forget. Vercel's edge runtime
   // freezes the function once the response returns, dropping any in-flight async
@@ -23,8 +32,9 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   // result. The SDK still swallows errors so a slow gateway never blocks nav.
   event.waitUntil(
     client.recordVisit({
-      path:       url.pathname,
-      session_id: req.cookies.get('nk_sid')?.value || null,
+      path:         url.pathname,
+      session_id:   req.cookies.get('nk_sid')?.value || null,
+      client_nonce: beaconNonce,
       utm: {
         source:   url.searchParams.get('utm_source')   || undefined,
         medium:   url.searchParams.get('utm_medium')   || undefined,
